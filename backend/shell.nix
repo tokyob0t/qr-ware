@@ -6,6 +6,7 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     ruff
     isort
+    pyright
     python312
     python312Packages.python-lsp-server
     python312Packages.python-lsp-ruff

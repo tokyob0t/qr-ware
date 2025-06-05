@@ -1,15 +1,17 @@
-from dotenv import load_dotenv
 from flask import Flask, jsonify
 
-load_dotenv()
+from src.routes import blueprints
 
 app = Flask(__name__)
+
+for bp in blueprints:
+    app.register_blueprint(bp)
 
 
 @app.route('/')
 def index():
-    return jsonify({'status': 'ok'})
+    return jsonify({'status': True})
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True)  # hypercorn app:app --reload
