@@ -1,16 +1,31 @@
 const Register = () => {
   return (
-    <div className="page-container">
-      <h1>Register Page</h1>
-      <div className="mock-form">
-        <input type="text" placeholder="Nombre completo" />
-        <input type="email" placeholder="Correo electrónico" />
-        <input type="password" placeholder="Contraseña" />
-        <input type="password" placeholder="Confirmar contraseña" />
-        <button>Registrarse</button>
+    <div className="register-container">
+      <div className="register-form">
+        <h1>Crear cuenta</h1>
+        <div className="form-group">
+          <label htmlFor="fullname">Nombre completo</label>
+          <input type="text" id="fullname" placeholder="Ingrese su nombre completo" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="email">Correo electrónico</label>
+          <input type="email" id="email" placeholder="Ingrese su correo" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Contraseña</label>
+          <input type="password" id="password" placeholder="Cree una contraseña" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="confirm-password">Confirmar contraseña</label>
+          <input type="password" id="confirm-password" placeholder="Confirme su contraseña" />
+        </div>
+        <button className="register-btn">Registrarse</button>
+        <p className="login-link">
+          ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+        </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;
