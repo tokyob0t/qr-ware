@@ -1,9 +1,7 @@
 import { NavLink } from 'react-router-dom';
 
 const Navbar = () => {
-  // Función para cerrar sesión
   const handleLogout = () => {
-    // Lógica de logout (a implementar)
     console.log('Usuario cerró sesión');
   };
 
@@ -18,7 +16,7 @@ const Navbar = () => {
           to="/products" 
           className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
         >
-          <i className="icon inventory-icon"></i>
+          <span className="nf nf-products"></span>
           Productos
         </NavLink>
         
@@ -26,7 +24,7 @@ const Navbar = () => {
           to="/scan" 
           className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
         >
-          <i className="icon scan-icon"></i>
+          <span className="nf nf-scan"></span>
           Escanear QR
         </NavLink>
         
@@ -34,7 +32,7 @@ const Navbar = () => {
           to="/movements" 
           className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
         >
-          <i className="icon movements-icon"></i>
+          <span className="nf nf-movements"></span>
           Movimientos
         </NavLink>
         
@@ -42,21 +40,21 @@ const Navbar = () => {
           to="/reports" 
           className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
         >
-          <i className="icon reports-icon"></i>
+          <span className="nf nf-reports"></span>
           Reportes
         </NavLink>
       </div>
       
       <div className="navbar-user">
         <div className="user-info">
-          <i className="icon user-icon"></i>
+          <span className="nf nf-user"></span>
           <span>Operario</span>
         </div>
         <button 
           onClick={handleLogout} 
           className="logout-btn"
         >
-          <i className="icon logout-icon"></i>
+          <span className="nf nf-logout"></span>
           Cerrar sesión
         </button>
       </div>
