@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import TypedDict
 
 from pydantic import BaseModel, EmailStr
 
@@ -10,13 +9,20 @@ class UserRegisterPayload(BaseModel):
     password: str
 
 
-class UserLoginPayload(TypedDict):
-    email: str
+class UserLoginPayload(BaseModel):
+    email: EmailStr
     password: str
 
 
 class UserRole(Enum):
-    ADMIN = 'ADMIN'
-    MANAGER = 'MANAGER'
-    AUDITOR = 'AUDITOR'
-    OPERATOR = 'OPERATOR'
+    OPERATOR = 1
+    AUDITOR = 2
+    MANAGER = 3
+    ADMIN = 4
+
+    def to_string(self) -> str:
+        return self.name
+
+    @classmethod
+    def from_string(cls, value: str) -> 'UserRole':
+        return cls[value.upper()]
