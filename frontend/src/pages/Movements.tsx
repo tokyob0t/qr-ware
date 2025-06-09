@@ -1,4 +1,4 @@
-const Movements = () => {
+export default function Movements() {
   return (
     <div className="page-container">
       <h1>Movements Page</h1>
@@ -28,5 +28,3 @@ const Movements = () => {
     </div>
   )
 }
-
-export default Movements

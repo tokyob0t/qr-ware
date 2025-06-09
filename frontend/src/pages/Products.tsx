@@ -1,4 +1,4 @@
-const Products = () => {
+export default function Products() {
   return (
     <div className="page-container">
       <h1>Products Page</h1>
@@ -31,5 +31,3 @@ const Products = () => {
     </div>
   )
 }
-
-export default Products

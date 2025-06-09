@@ -1,4 +1,4 @@
-const ScanQR = () => {
+export default function ScanQR() {
   return (
     <div className="page-container">
       <h1>Scan QR Page</h1>
@@ -9,5 +9,3 @@ const ScanQR = () => {
     </div>
   )
 }
-
-export default ScanQR

@@ -1,4 +1,4 @@
-const Reports = () => {
+export default function Reports() {
   return (
     <div className="page-container">
       <h1>Reports Page</h1>
@@ -19,5 +19,3 @@ const Reports = () => {
     </div>
   )
 }
-
-export default Reports
