@@ -33,7 +33,7 @@
 }
 
 .nf-products::before {
-  content: "\f03d"; 
+  content: "\f187"; 
 }
 
 .nf-scan::before {
@@ -41,7 +41,7 @@
 }
 
 .nf-movements::before {
-  content: "\f073";
+  content: "\f1da";
 }
 
 .nf-reports::before {
@@ -92,10 +92,14 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.navbar-brand .logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #3498db;
+.navbar-logo {
+  height: 90px; 
+  width: auto; 
+  transition: transform 0.3s ease;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.20);
 }
 
 .navbar-links {

@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import logo from '../assets/logo.svg';
 
 const Navbar = () => {
   const handleLogout = () => {
@@ -8,7 +9,11 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <span className="logo">QRWare</span>
+        <img 
+          src={logo} 
+          alt="QRWare Logo" 
+          className="navbar-logo"
+        />
       </div>
       
       <div className="navbar-links">
