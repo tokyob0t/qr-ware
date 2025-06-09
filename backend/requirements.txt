@@ -1,3 +1,9 @@
 flask
+flask[async]
 supabase
+hypercorn
 python-dotenv
+pydantic
+pydantic[email]
+bcrypt
+dataclasses-json
