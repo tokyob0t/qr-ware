@@ -1,0 +1,49 @@
+summary: User login
+description: Authenticate user with email and password. Returns auth token in a cookie.
+tags:
+  - Authentication
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: UserLoginPayload
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: "jane@example.com"
+        password:
+          type: string
+          format: password
+          description: User's password
+          example: "strongpassword123"
+responses:
+  200:
+    description: Logged in successfully, token cookie set
+    schema:
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Logged in"
+  400:
+    description: Validation errors, already logged in, or invalid credentials
+    schema:
+      properties:
+        success:
+          type: boolean
+          example: false
+        errors:
+          type: array
+          items:
+            type: object
+        message:
+          type: string
+          example: "Invalid password"
