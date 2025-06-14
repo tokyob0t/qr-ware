@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 import bcrypt
 import jwt
+from flasgger import swag_from
 from flask import Blueprint, make_response, request
 from pydantic import ValidationError
 
@@ -64,6 +65,7 @@ class AuthService:
         )
 
 
+@swag_from('../../docs/auth/register.yml')
 @auth_bp.route('/register', methods=['POST'])
 async def register():
     try:
@@ -82,6 +84,7 @@ async def register():
     return res.success(message=f'User {data.name} registered successfully')
 
 
+@swag_from('../../docs/auth/login.yml')
 @auth_bp.route('/login', methods=['POST'])
 async def login():
     existing_token = request.cookies.get('qrware_auth_token')
@@ -119,6 +122,7 @@ async def login():
     return response
 
 
+@swag_from('../../docs/auth/logout.yml')
 @auth_bp.route('/logout', methods=['POST'])
 async def logout():
     token = request.cookies.get('qrware_auth_token')

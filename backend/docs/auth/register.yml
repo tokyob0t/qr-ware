@@ -1,0 +1,54 @@
+summary: Register a new user
+description: Register a new user with name, email, and password.
+tags:
+  - Authentication
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: UserRegisterPayload
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          description: The user's full name
+          example: "Jane Doe"
+        email:
+          type: string
+          format: email
+          description: The user's email address
+          example: "jane@example.com"
+        password:
+          type: string
+          format: password
+          description: The user's password
+          example: "strongpassword123"
+responses:
+  200:
+    description: User registered successfully
+    schema:
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "User Jane Doe registered successfully"
+  400:
+    description: Validation errors or email already registered
+    schema:
+      properties:
+        success:
+          type: boolean
+          example: false
+        errors:
+          type: array
+          items:
+            type: object
+        message:
+          type: string
+          example: "Email already registered"

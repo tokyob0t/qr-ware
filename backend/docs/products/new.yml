@@ -1,0 +1,50 @@
+summary: Add a new product
+description: Create a new product with sku, name, price, stock, and optional fields.
+tags:
+  - Products
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: ProductPayload
+      required:
+        - sku
+        - name
+        - price
+        - stock
+      properties:
+        sku:
+          type: string
+          description: Product SKU
+          example: "ABC123"
+        name:
+          type: string
+          description: Product name
+          example: "Guarana"
+        price:
+          type: number
+          format: float
+          description: Product price
+          example: 10.99
+        stock:
+          type: integer
+          description: Units in stock
+          example: 100
+        is_active:
+          type: boolean
+          description: Whether the product is active
+          example: true
+        barcode:
+          type: string
+          description: Optional product barcode
+          example: "0123456789012"
+responses:
+  200:
+    description: Product created successfully
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: true

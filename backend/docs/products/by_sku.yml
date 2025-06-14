@@ -1,0 +1,58 @@
+summary: Get product by SKU
+description: Retrieve details of a product by its SKU.
+tags:
+  - Products
+parameters:
+  - name: sku
+    in: path
+    required: true
+    type: string
+    description: The SKU identifier of the product
+    example: "ABC123"
+responses:
+  200:
+    description: Product found
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            sku:
+              type: string
+              example: "ABC123"
+            name:
+              type: string
+              example: "Guarana"
+            price:
+              type: number
+              format: float
+              example: 10.99
+            stock:
+              type: integer
+              example: 100
+            is_active:
+              type: boolean
+              example: true
+            barcode:
+              type: string
+              nullable: true
+              example: "0123456789012"
+            created_at:
+              type: string
+              format: date-time
+              example: "2025-06-14T12:00:00Z"
+  404:
+    description: Product not found
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: 'Product with SKU "ABC123" not found'

@@ -1,0 +1,25 @@
+summary: User logout
+description: Logs out the current user by clearing the authentication token cookie.
+tags:
+  - Authentication
+responses:
+  200:
+    description: Logged out successfully
+    schema:
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Logged out successfully"
+  401:
+    description: User not logged in or invalid/expired token
+    schema:
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "User is not logged in"
