@@ -1,7 +1,8 @@
+import inspect
 from functools import wraps
 
 import jwt
-from flask import request
+from flask import g, request
 
 from ..classes import Response as res
 from ..config import Config
@@ -10,12 +11,13 @@ from ..config import Config
 def requires_roles(allowed_roles: list[str]):
     def decorator(f):
         @wraps(f)
-        def wrapped(*args, **kwargs):
-            token = request.cookies.get('auth_token')
+        async def wrapper(*args, **kwargs):
+            token = request.cookies.get('qrware_auth_token')
             if not token:
                 return res.error(
                     'Authentication token is missing', status_code=401
                 )
+
             try:
                 payload = jwt.decode(
                     token, Config.SECRET_KEY, algorithms=['HS256']
@@ -25,14 +27,22 @@ def requires_roles(allowed_roles: list[str]):
             except jwt.InvalidTokenError:
                 return res.error('Invalid token', status_code=401)
 
-            user_role = payload.get('role')
-            if user_role not in allowed_roles:
+            role = payload.get('role')
+            if role not in allowed_roles:
                 return res.error(
                     'Forbidden: insufficient privileges', status_code=403
                 )
 
-            return f(*args, **kwargs)
+            g.current_user = {
+                'email': payload.get('email'),
+                'role': role,
+            }
 
-        return wrapped
+            if inspect.iscoroutinefunction(f):
+                return await f(*args, **kwargs)
+            else:
+                return f(*args, **kwargs)
+
+        return wrapper
 
     return decorator

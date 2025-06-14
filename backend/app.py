@@ -9,9 +9,11 @@ for bp in blueprints:
 
 
 @app.route('/')
-def index():
+async def index():
     return jsonify({'status': True})
 
 
-if __name__ == '__main__':
-    app.run(debug=True)  # hypercorn app:app --reload
+# hypercorn app:app --reload
+
+# if __name__ == '__main__':
+#     app.run(debug=True)
