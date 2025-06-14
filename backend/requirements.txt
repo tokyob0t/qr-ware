@@ -1,5 +1,6 @@
 flask
 flask[async]
+flasgger
 supabase
 hypercorn
 python-dotenv
