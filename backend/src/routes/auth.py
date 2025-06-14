@@ -1,29 +1,17 @@
 import asyncio
-from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 import bcrypt
 import jwt
-from dataclasses_json import LetterCase, dataclass_json
 from flask import Blueprint, make_response, request
 from pydantic import ValidationError
 
 from ..classes import Response as res
 from ..config import Config
-from ..schemas import UserLoginPayload, UserRegisterPayload, UserRole
+from ..schemas import UserData, UserLoginPayload, UserRegisterPayload, UserRole
 from ..supabase_client import get_connection
 
 auth_bp = Blueprint('auth', __name__)
-
-
-@dataclass_json(letter_case=LetterCase.SNAKE)
-@dataclass
-class UserData:
-    email: str
-    name: str
-    password_hash: str
-    role: str = UserRole.OPERATOR.to_string()
-    created_at: str = datetime.utcnow().isoformat()
 
 
 class AuthService:
@@ -44,41 +32,36 @@ class AuthService:
     async def fetch_user(email: str) -> UserData | None:
         conn = await get_connection()
         response = (
-            await conn.table('users').select('*').eq('email', email).execute
+            await conn.table('users').select('*').eq('email', email).execute()
         )
-
         if response.data:
             return UserData.from_dict(response.data[0])
+        return None
 
     @staticmethod
-    async def create_user(
-        name: str,
-        email: str,
-        password: str,
-        role: str = UserRole.OPERATOR.to_string(),
-    ) -> bool:
-        password_hash = await AuthService.hash_password(password)
+    async def create_user(data: UserRegisterPayload) -> bool:
+        password_hash = await AuthService.hash_password(data.password)
         user = UserData(
-            name=name, email=email, password_hash=password_hash, role=role
+            name=data.name,
+            email=data.email,
+            password_hash=password_hash,
+            role=data.role or UserRole.OPERATOR.to_string(),
         )
-
         conn = await get_connection()
-
         await conn.table('users').insert(user.to_dict()).execute()
-
         return True
 
     @staticmethod
-    def create_token(user: UserData):
+    def create_token(user: UserData) -> str:
         return jwt.encode(
-            payload={
+            {
                 'email': user.email,
                 'role': user.role,
                 'exp': datetime.utcnow() + timedelta(days=30),
             },
-            key=Config.SECRET_KEY,
+            Config.SECRET_KEY,
             algorithm='HS256',
-        ).decode('utf-8')
+        )
 
 
 @auth_bp.route('/register', methods=['POST'])
@@ -94,13 +77,18 @@ async def register():
     if await AuthService.fetch_user(data.email):
         return res.error('Email already registered')
 
-    await AuthService.create_user(data.name, data.email, data.password)
+    await AuthService.create_user(data)
 
     return res.success(message=f'User {data.name} registered successfully')
 
 
 @auth_bp.route('/login', methods=['POST'])
 async def login():
+    existing_token = request.cookies.get('qrware_auth_token')
+
+    if existing_token:
+        return res.error('Already logged in')
+
     try:
         raw_data = request.get_json()
         data = UserLoginPayload(**raw_data)
@@ -119,13 +107,40 @@ async def login():
 
     response = make_response(res.success('Logged in')[0])
     response.set_cookie(
-        'auth_token',
+        'qrware_auth_token',
         token,
         httponly=True,
         secure=True,
         samesite='Lax',
-        max_age=2592000,  # 30 días
+        max_age=2592000,  # 30 dias
         path='/',
     )
 
+    return response
+
+
+@auth_bp.route('/logout', methods=['POST'])
+async def logout():
+    token = request.cookies.get('qrware_auth_token')
+
+    if not token:
+        return res.error('User is not logged in', status=401)
+
+    try:
+        jwt.decode(token, key=Config.SECRET_KEY, algorithms=['HS256'])
+    except jwt.ExpiredSignatureError:
+        return res.error('Session expired', status_code=401)
+    except jwt.InvalidTokenError:
+        return res.error('Invalid token', status_code=401)
+
+    response = make_response(res.success('Logged out successfully')[0])
+    response.set_cookie(
+        'qrware_auth_token',
+        '',
+        httponly=True,
+        secure=True,
+        samesite='Lax',
+        expires=0,
+        path='/',
+    )
     return response

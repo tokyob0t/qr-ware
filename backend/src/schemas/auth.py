@@ -1,17 +1,9 @@
+from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 
+from dataclasses_json import LetterCase, dataclass_json
 from pydantic import BaseModel, EmailStr
-
-
-class UserRegisterPayload(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
-
-
-class UserLoginPayload(BaseModel):
-    email: EmailStr
-    password: str
 
 
 class UserRole(Enum):
@@ -26,3 +18,27 @@ class UserRole(Enum):
     @classmethod
     def from_string(cls, value: str) -> 'UserRole':
         return cls[value.upper()]
+
+
+class UserRegisterPayload(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+    role: str = 'OPERATOR'
+
+
+class UserLoginPayload(BaseModel):
+    email: EmailStr
+    password: str
+
+
+@dataclass_json(letter_case=LetterCase.SNAKE)
+@dataclass
+class UserData:
+    email: str
+    name: str
+    password_hash: str
+    role: str = UserRole.OPERATOR.to_string()
+    created_at: str = field(
+        default_factory=lambda: datetime.utcnow().isoformat()
+    )
