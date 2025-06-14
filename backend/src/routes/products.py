@@ -1,3 +1,4 @@
+from flasgger import swag_from
 from flask import Blueprint, request
 
 # from flask import g
@@ -36,6 +37,8 @@ class ProductService:
         return True
 
 
+@swag_from('../../docs/products/all.yml', methods=['GET'])
+@swag_from('../../docs/products/new.yml', methods=['POST'])
 @products_bp.route('/products', methods=['GET', 'POST'])
 @requires_roles(['OPERATOR', 'AUDITOR', 'MANAGER', 'ADMIN'])
 async def products():
@@ -65,8 +68,9 @@ async def products():
     return res.error('Method not allowed', status_code=405)
 
 
-@requires_roles(['OPERATOR', 'AUDITOR', 'MANAGER', 'ADMIN'])
+@swag_from('../../docs/products/by_sku.yml')
 @products_bp.route('/products/<sku>', methods=['GET'])
+@requires_roles(['OPERATOR', 'AUDITOR', 'MANAGER', 'ADMIN'])
 async def product_by_sku(sku: str):
     products = await ProductService.fetch_by(sku=sku)
     if not products:
