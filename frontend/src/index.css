@@ -649,18 +649,46 @@ h1 {
   box-sizing: border-box;
 }
 
-/* Contenedores para select y label */
 .filter-order-container > div {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-/* Estilos para selects */
 .filter-order-container select {
   padding: 0.4rem 0.5rem;
   border-radius: 4px;
   border: 1px solid #ccc;
   font-size: 1rem;
   box-sizing: border-box;
+}
+
+#qr-reader,
+#qr-reader__dashboard_section,
+#qr-reader__dashboard_section_csr {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  background: #eee !important;
+  border-radius: 8px !important;
+}
+
+#qr-reader video, #qr-reader canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  position: absolute !important;
+  left: 0; top: 0;
+}
+
+.scanner-area::before {
+  content: "";
 }
