@@ -1,70 +1,53 @@
-import { NavLink } from 'react-router-dom';
-import logo from '../assets/logo.svg';
+import { NavLink, useNavigate } from "react-router-dom";
+import { logout } from "../api"; // importa la función logout
 
-const Navbar = () => {
-  const handleLogout = () => {
-    console.log('Usuario cerró sesión');
+export default function NavBar() {
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout(); 
+    } catch (e) {
+    } finally {
+      localStorage.removeItem("token"); 
+      navigate("/login");
+    }
   };
 
   return (
     <nav className="navbar">
-      <div className="navbar-brand">
-        <img 
-          src={logo} 
-          alt="QRWare Logo" 
-          className="navbar-logo"
-        />
-      </div>
-      
-      <div className="navbar-links">
-        <NavLink 
-          to="/products" 
-          className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
-        >
-          <span className="nf nf-products"></span>
-          Productos
-        </NavLink>
-        
-        <NavLink 
-          to="/scan" 
-          className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
-        >
-          <span className="nf nf-scan"></span>
-          Escanear QR
-        </NavLink>
-        
-        <NavLink 
-          to="/movements" 
-          className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
-        >
-          <span className="nf nf-movements"></span>
-          Movimientos
-        </NavLink>
-        
-        <NavLink 
-          to="/reports" 
-          className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
-        >
-          <span className="nf nf-reports"></span>
-          Reportes
-        </NavLink>
-      </div>
-      
-      <div className="navbar-user">
-        <div className="user-info">
-          <span className="nf nf-user"></span>
-          <span>Operario</span>
+      {token && (
+        <>
+          <div className="navbar-links">
+            <NavLink to="/products" className="nav-link">
+              <span className="nf nf-products" /> Productos
+            </NavLink>
+            <NavLink to="/movements" className="nav-link">
+              <span className="nf nf-movements" /> Movimientos
+            </NavLink>
+            <NavLink to="/reports" className="nav-link">
+              <span className="nf nf-reports" /> Reportes
+            </NavLink>
+            <NavLink to="/scanqr" className="nav-link">
+              <span className="nf nf-scan" /> Escanear QR
+            </NavLink>
+          </div>
+          <button className="logout-btn" onClick={handleLogout}>
+            <span className="nf nf-logout" /> Cerrar sesión
+          </button>
+        </>
+      )}
+      {!token && (
+        <div className="navbar-links">
+          <NavLink to="/login" className="nav-link">
+            Login
+          </NavLink>
+          <NavLink to="/register" className="nav-link">
+            Registro
+          </NavLink>
         </div>
-        <button 
-          onClick={handleLogout} 
-          className="logout-btn"
-        >
-          <span className="nf nf-logout"></span>
-          Cerrar sesión
-        </button>
-      </div>
+      )}
     </nav>
   );
-};
-
-export default Navbar;
+}

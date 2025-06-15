@@ -1,21 +1,23 @@
-from flasgger import Swagger
 from flask import Flask, jsonify
+from flask_cors import CORS
+from flasgger import Swagger
 
-from src.routes import blueprints
+from src.routes.auth import auth_bp
+from src.routes.products import products_bp
 
 app = Flask(__name__)
+
+CORS(app, supports_credentials=True)
 swagger = Swagger(app)
 
-for bp in blueprints:
-    app.register_blueprint(bp)
-
+app.register_blueprint(auth_bp)
+app.register_blueprint(products_bp)
 
 @app.route('/')
-async def index():
+def index():
     return jsonify({'status': True})
-
-
-# hypercorn app:app --reload
 
 # if __name__ == '__main__':
 #     app.run(debug=True)
+# Para async:
+# hypercorn app:app --reload

@@ -1,42 +1,66 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
-import Login from '../pages/Login'
-import Register from '../pages/Register'
-import Products from '../pages/Products'
-import ScanQR from '../pages/ScanQR'
-import Movements from '../pages/Movements'
-import Reports from '../pages/Reports'
-import Navbar from '../components/NavBar'
+import React from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import Products from "../pages/Products";
+import Movements from "../pages/Movements";
+import Reports from "../pages/Reports";
+import ScanQR from "../pages/ScanQR";
+import NavBar from "../components/NavBar";
 
-// Layout para páginas con barra de navegación
-const MainLayout = () => {
-  return (
-    <div className="main-layout">
-      <Navbar />
-      <div className="content">
-        <Outlet />
-      </div>
-    </div>
-  );
-};
-
-const AppRouter = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        
-        {/* Rutas protegidas con barra de navegación */}
-        <Route element={<MainLayout />}>
-          <Route path="/products" element={<Products />} />
-          <Route path="/scan" element={<ScanQR />} />
-          <Route path="/movements" element={<Movements />} />
-          <Route path="/reports" element={<Reports />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  )
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const token = localStorage.getItem("token");
+  return token ? <>{children}</> : <Navigate to="/login" />;
 }
 
-export default AppRouter
+export default function AppRouter() {
+  const location = useLocation();
+
+  // Oculta navbar en /login y /register
+  const hideNavbar = ["/login", "/register"].includes(location.pathname);
+
+  return (
+    <>
+      {!hideNavbar && <NavBar />}
+      <div className="main-layout">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/products"
+            element={
+              <PrivateRoute>
+                <Products />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/movements"
+            element={
+              <PrivateRoute>
+                <Movements />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              <PrivateRoute>
+                <Reports />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/scanqr"
+            element={
+              <PrivateRoute>
+                <ScanQR />
+              </PrivateRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </div>
+    </>
+  );
+}

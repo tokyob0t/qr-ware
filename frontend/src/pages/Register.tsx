@@ -1,29 +1,63 @@
+import React, { useState } from "react";
+import { register } from "../api";
+import { useNavigate } from "react-router-dom";
+
 export default function Register() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await register(name, email, password);
+      navigate("/login");
+    } catch (err: any) {
+      setError("Error al registrar usuario");
+    }
+  };
+
   return (
     <div className="register-container">
-      <div className="register-form">
-        <h1>Crear cuenta</h1>
+      <form className="register-form" onSubmit={handleRegister}>
+        <h1>Registro</h1>
         <div className="form-group">
-          <label htmlFor="fullname">Nombre completo</label>
-          <input type="text" id="fullname" placeholder="Ingrese su nombre completo" />
+          <label>Nombre</label>
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="email">Correo electrónico</label>
-          <input type="email" id="email" placeholder="Ingrese su correo" />
+          <label>Correo</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="password">Contraseña</label>
-          <input type="password" id="password" placeholder="Cree una contraseña" />
+          <label>Contraseña</label>
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
         </div>
-        <div className="form-group">
-          <label htmlFor="confirm-password">Confirmar contraseña</label>
-          <input type="password" id="confirm-password" placeholder="Confirme su contraseña" />
+        <button className="register-btn" type="submit">
+          Registrarse
+        </button>
+        {error && <div style={{ color: "red" }}>{error}</div>}
+        <div className="register-link">
+          ¿Ya tienes cuenta? <a href="/login">Inicia sesión</a>
         </div>
-        <button className="register-btn">Registrarse</button>
-        <p className="login-link">
-          ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
-        </p>
-      </div>
+      </form>
     </div>
   );
 }
