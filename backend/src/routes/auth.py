@@ -114,7 +114,7 @@ async def login():
         token,
         httponly=True,
         secure=True,
-        samesite='Lax',
+        samesite='None',
         max_age=2592000,  # 30 dias
         path='/',
     )
@@ -143,7 +143,7 @@ async def logout():
         '',
         httponly=True,
         secure=True,
-        samesite='Lax',
+        samesite='None',
         expires=0,
         path='/',
     )
