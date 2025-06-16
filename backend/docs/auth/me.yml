@@ -1,0 +1,42 @@
+tags:
+  - Auth
+summary: Get current logged-in user's info
+description: |
+  Returns information about the currently logged-in user based on the `qrware_auth_token` cookie.
+responses:
+  200:
+    description: User is logged in
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: User is logged in
+        data:
+          type: object
+          properties:
+            email:
+              type: string
+              example: user@example.com
+            role:
+              type: string
+              example: OPERATOR  
+  401:
+    description: User is not logged in
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: User is not logged in
+consumes: []
+produces:
+  - application/json
+security:
+  - cookieAuth: []
