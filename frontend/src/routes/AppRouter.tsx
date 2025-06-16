@@ -1,4 +1,3 @@
-import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -11,14 +10,12 @@ import { useAuthStatus } from "../hooks/useAuth";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { checking, user } = useAuthStatus();
-
   if (checking) return <div>Cargando...</div>;
   return user ? <>{children}</> : <Navigate to="/login" />;
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { checking, user } = useAuthStatus();
-
   if (checking) return <div>Cargando...</div>;
   return user ? <Navigate to="/products" /> : <>{children}</>;
 }
