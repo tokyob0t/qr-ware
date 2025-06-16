@@ -150,13 +150,14 @@ async def logout():
     return response
 
 
-
-@swag_from("../../docs/auth/is_logged.yml")
-@auth_bp.route('/is_logged', methods=['GET'])
-async def is_logged():
+@swag_from('../../docs/auth/me.yml')
+@auth_bp.route('/me', methods=['GET'])
+async def me():
     token = request.cookies.get('qrware_auth_token')
 
     if not token:
         return res.error('User is not logged in', status_code=401)
 
-    return res.success("User is logged in")
+    return res.success(
+        'User is logged in', data={'email': 'user@example.com', 'role': 'admin'}
+    )
