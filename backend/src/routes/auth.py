@@ -128,7 +128,7 @@ async def logout():
     token = request.cookies.get('qrware_auth_token')
 
     if not token:
-        return res.error('User is not logged in', status=401)
+        return res.error('User is not logged in', status_code=401)
 
     try:
         jwt.decode(token, key=Config.SECRET_KEY, algorithms=['HS256'])
@@ -148,3 +148,15 @@ async def logout():
         path='/',
     )
     return response
+
+
+
+@swag_from("../../docs/auth/is_logged.yml")
+@auth_bp.route('/is_logged', methods=['GET'])
+async def is_logged():
+    token = request.cookies.get('qrware_auth_token')
+
+    if not token:
+        return res.error('User is not logged in', status_code=401)
+
+    return res.success("User is logged in")
