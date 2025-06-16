@@ -1,23 +1,24 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { logout } from "../api"; // importa la función logout
+import { logout } from "../api";
+import { useAuthStatus } from "../hooks/useAuth";
 
 export default function NavBar() {
-  const token = localStorage.getItem("token");
+  const { user, checking } = useAuthStatus();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await logout(); 
-    } catch (e) {
+      await logout();
     } finally {
-      localStorage.removeItem("token"); 
       navigate("/login");
     }
   };
 
+  if (checking) return null;
+
   return (
     <nav className="navbar">
-      {token && (
+      {user ? (
         <>
           <div className="navbar-links">
             <NavLink to="/products" className="nav-link">
@@ -33,12 +34,21 @@ export default function NavBar() {
               <span className="nf nf-scan" /> Escanear QR
             </NavLink>
           </div>
-          <button className="logout-btn" onClick={handleLogout}>
-            <span className="nf nf-logout" /> Cerrar sesión
-          </button>
+          <div style={{
+            marginLeft: "auto",
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem"
+          }}>
+            <span style={{ color: "white", fontWeight: 500 }}>
+              {user.name ?? user.email} ({user.role})
+            </span>
+            <button className="logout-btn" onClick={handleLogout}>
+              <span className="nf nf-logout" /> Cerrar sesión
+            </button>
+          </div>
         </>
-      )}
-      {!token && (
+      ) : (
         <div className="navbar-links">
           <NavLink to="/login" className="nav-link">
             Login

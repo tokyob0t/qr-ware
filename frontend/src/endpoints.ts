@@ -6,4 +6,5 @@ export const ENDPOINTS = {
   LOGOUT: `${API_BASE_URL}/logout`,
   PRODUCTS: `${API_BASE_URL}/products`,
   PRODUCT_BY_SKU: (sku: string) => `${API_BASE_URL}/products/${sku}`,
+  ME: `${API_BASE_URL}/me`,
 };

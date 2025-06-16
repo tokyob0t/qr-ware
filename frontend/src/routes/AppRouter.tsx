@@ -7,16 +7,24 @@ import Movements from "../pages/Movements";
 import Reports from "../pages/Reports";
 import ScanQR from "../pages/ScanQR";
 import NavBar from "../components/NavBar";
+import { useAuthStatus } from "../hooks/useAuth";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem("token");
-  return token ? <>{children}</> : <Navigate to="/login" />;
+  const { checking, user } = useAuthStatus();
+
+  if (checking) return <div>Cargando...</div>;
+  return user ? <>{children}</> : <Navigate to="/login" />;
+}
+
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { checking, user } = useAuthStatus();
+
+  if (checking) return <div>Cargando...</div>;
+  return user ? <Navigate to="/products" /> : <>{children}</>;
 }
 
 export default function AppRouter() {
   const location = useLocation();
-
-  // Oculta navbar en /login y /register
   const hideNavbar = ["/login", "/register"].includes(location.pathname);
 
   return (
@@ -24,8 +32,22 @@ export default function AppRouter() {
       {!hideNavbar && <NavBar />}
       <div className="main-layout">
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
           <Route
             path="/products"
             element={
