@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getProducts } from "../api";
 import * as XLSX from "xlsx";
 import {
