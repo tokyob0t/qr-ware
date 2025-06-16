@@ -1,6 +1,7 @@
 flask
 flask[async]
 flasgger
+flask_cors
 supabase
 hypercorn
 python-dotenv
