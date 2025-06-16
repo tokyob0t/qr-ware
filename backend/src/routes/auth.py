@@ -128,7 +128,7 @@ async def logout():
     token = request.cookies.get('qrware_auth_token')
 
     if not token:
-        return res.error('User is not logged in', status=401)
+        return res.error('User is not logged in', status_code=401)
 
     try:
         jwt.decode(token, key=Config.SECRET_KEY, algorithms=['HS256'])
