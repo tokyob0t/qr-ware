@@ -56,6 +56,7 @@ class AuthService:
     def create_token(user: UserData) -> str:
         return jwt.encode(
             {
+                'name': user.name,
                 'email': user.email,
                 'role': user.role,
                 'exp': datetime.utcnow() + timedelta(days=30),
@@ -158,6 +159,13 @@ async def me():
     if not token:
         return res.error('User is not logged in', status_code=401)
 
+    payload = jwt.decode(token, Config.SECRET_KEY, algorithms=['HS256'])
+
     return res.success(
-        'User is logged in', data={'email': 'user@example.com', 'role': 'admin'}
+        'User is logged in',
+        data={
+            'name': payload.get('name'),
+            'email': payload.get('email'),
+            'role': payload.get('role'),
+        },
     )

@@ -35,6 +35,7 @@ def requires_roles(allowed_roles: list[str]):
 
             g.current_user = {
                 'email': payload.get('email'),
+                'name': payload.get('name'),
                 'role': role,
             }
 
