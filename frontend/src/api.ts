@@ -70,3 +70,13 @@ export async function getProductBySKU(sku: string) {
   const json = await response.json();
   return json.data ?? json;
 }
+
+export async function getSession() {
+  const res = await fetch(ENDPOINTS.ME, {
+    method: "GET",
+    credentials: "include",
+  });
+  if (!res.ok) return null;
+  const body = await res.json();
+  return body?.data || null;
+}
