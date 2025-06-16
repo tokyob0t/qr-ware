@@ -2,7 +2,7 @@ services:
   - type: web
     name: qr-ware-api
     env: python
-    rootDir: backend
+    rootDir: ./backend
     buildCommand: pip install -r requirements.txt
-    startCommand: hypercorn app:app
+    startCommand: hypercorn app:app --bind 0.0.0.0:${PORT}
     autoDeploy: true
