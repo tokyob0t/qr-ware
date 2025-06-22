@@ -692,3 +692,29 @@ h1 {
 .scanner-area::before {
   content: "";
 }
+
+.banner-success {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  background: #27ae60;
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 1.2rem;
+  z-index: 9999;
+  animation: bannerSlideDown 0.4s ease;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+@keyframes bannerSlideDown {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
