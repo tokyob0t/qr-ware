@@ -1,0 +1,68 @@
+summary: Update product by SKU
+description: Partially update a product's information using its SKU. Only the provided fields will be modified.
+tags:
+  - Products
+parameters:
+  - name: sku
+    in: path
+    required: true
+    type: string
+    description: The SKU identifier of the product to update
+    example: "ABC123"
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Guarana Zero"
+        price:
+          type: number
+          format: float
+          example: 11.49
+        stock:
+          type: integer
+          example: 80
+        is_active:
+          type: boolean
+          example: true
+        barcode:
+          type: string
+          nullable: true
+          example: "0123456789012"
+responses:
+  200:
+    description: Product updated successfully
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Product updated successfully
+  400:
+    description: Invalid input
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: SKU cannot be updated
+  404:
+    description: Product not found
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: 'Product with SKU "ABC123" not found'

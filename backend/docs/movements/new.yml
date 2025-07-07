@@ -1,0 +1,88 @@
+summary: Log a new product movement
+description: Create a new record for a product movement such as stock addition or product creation.
+tags:
+  - Movements
+consumes:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    description: Product movement details
+    required: true
+    schema:
+      type: object
+      required:
+        - sku
+        - type
+        - quantity
+        - user_email
+      properties:
+        sku:
+          type: string
+          example: "ABC123"
+        type:
+          type: string
+          enum:
+            - PRODUCT_CREATED
+            - STOCK_ADDED
+            - PRODUCT_DELETED
+            - STOCK_REMOVED
+          example: "STOCK_ADDED"
+        quantity:
+          type: integer
+          minimum: 1
+          example: 10
+        user_email:
+          type: string
+          format: email
+          example: "user@example.com"
+        note:
+          type: string
+          nullable: true
+          example: "Added new stock after supplier delivery"
+responses:
+  200:
+    description: Movement logged successfully
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Movement logged successfully"
+  400:
+    description: Validation error
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        errors:
+          type: array
+          items:
+            type: object
+  403:
+    description: Forbidden (e.g., user email mismatch)
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "User email mismatch"
+  405:
+    description: Method not allowed
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Method not allowed"

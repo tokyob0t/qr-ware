@@ -1,0 +1,50 @@
+summary: Get all product movements
+description: Retrieve the list of all product movements ordered by timestamp descending.
+tags:
+  - Movements
+responses:
+  200:
+    description: List of product movements
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+                example: "2025-07-07T14:00:00Z"
+              sku:
+                type: string
+                example: "ABC123"
+              type:
+                type: string
+                example: "STOCK_ADDED"
+              quantity:
+                type: integer
+                example: 10
+              user_email:
+                type: string
+                format: email
+                example: "user@example.com"
+              note:
+                type: string
+                nullable: true
+                example: "Initial stock added"
+  403:
+    description: Forbidden
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Forbidden: insufficient permissions"
