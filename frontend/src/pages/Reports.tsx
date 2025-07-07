@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProducts } from "../api";
+import { getProducts, getMovements } from "../api";
 import * as XLSX from "xlsx";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, LineChart, Line
@@ -7,9 +7,10 @@ import {
 
 export default function Reports() {
   const [products, setProducts] = useState<any[]>([]);
+  const [movements, setMovements] = useState<any[]>([]);
   const [error, setError] = useState("");
 
-  // Simulación de movimientos mensuales
+  // Simulación de movimientos mensuales (puedes reemplazar por datos reales si quieres)
   const [monthlyMovements] = useState([
     { month: "Ene", movimientos: 10 },
     { month: "Feb", movimientos: 16 },
@@ -23,9 +24,12 @@ export default function Reports() {
     getProducts()
       .then(setProducts)
       .catch((err) => setError(err.message));
+    getMovements()
+      .then(setMovements)
+      .catch((err) => setError(err.message));
   }, []);
 
-  const exportToExcel = () => {
+  const exportToExcelProducts = () => {
     const ws = XLSX.utils.json_to_sheet(products.map(prod => ({
       SKU: prod.sku,
       Nombre: prod.name,
@@ -35,6 +39,20 @@ export default function Reports() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Productos");
     XLSX.writeFile(wb, "productos.xlsx");
+  };
+
+  const exportToExcelMovements = () => {
+    const ws = XLSX.utils.json_to_sheet(movements.map(mov => ({
+      SKU: mov.sku,
+      Tipo: mov.type,
+      Cantidad: mov.quantity,
+      Usuario: mov.user_email,
+      Nota: mov.note,
+      Fecha: mov.created_at || mov.date || "", // ajusta según tu campo de fecha
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Movimientos");
+    XLSX.writeFile(wb, "movimientos.xlsx");
   };
 
   return (
@@ -72,13 +90,12 @@ export default function Reports() {
         </div>
 
         <div className="export-options" style={{ display: "flex", gap: "1rem", justifyContent: "center", marginTop: "1.5rem" }}>
-          <button onClick={exportToExcel} style={{ fontWeight: "bold" }}>
+          <button onClick={exportToExcelProducts} style={{ fontWeight: "bold" }}>
             Exportar Stock a Excel
           </button>
           <button
-            onClick={() => alert("Exportar movimientos no implementado aún")}
-            style={{ fontWeight: "bold", background: "#bdc3c7", cursor: "not-allowed" }}
-            disabled
+            onClick={exportToExcelMovements}
+            style={{ fontWeight: "bold" }}
           >
             Exportar Movimientos a Excel
           </button>
