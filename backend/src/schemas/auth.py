@@ -19,6 +19,12 @@ class UserRole(Enum):
     def from_string(cls, value: str) -> 'UserRole':
         return cls[value.upper()]
 
+    def __str__(self):
+        return self.to_string()
+
+    def __repr__(self):
+        return self.to_string()
+
 
 class UserRegisterPayload(BaseModel):
     name: str

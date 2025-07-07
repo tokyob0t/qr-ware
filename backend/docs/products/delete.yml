@@ -1,0 +1,34 @@
+summary: Delete product by SKU
+description: Delete a product from the system using its SKU.
+tags:
+  - Products
+parameters:
+  - name: sku
+    in: path
+    required: true
+    type: string
+    description: The SKU identifier of the product to delete
+    example: "ABC123"
+responses:
+  200:
+    description: Product deleted successfully
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Product deleted successfully
+  404:
+    description: Product not found
+    schema:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: 'Product with SKU "ABC123" not found'
