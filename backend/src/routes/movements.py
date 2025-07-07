@@ -37,7 +37,7 @@ class MovementService:
 @swag_from('../../docs/movements/all.yml', methods=['GET'])
 @swag_from('../../docs/movements/new.yml', methods=['POST'])
 @movements_bp.route('/movements', methods=['GET', 'POST'])
-# @requires_roles(['OPERATOR', 'MANAGER', 'AUDITOR', 'ADMIN'])
+@requires_roles(['OPERATOR', 'MANAGER', 'AUDITOR', 'ADMIN'])
 async def movements():
     if request.method == 'GET':
         movements = await MovementService.fetch_all()
