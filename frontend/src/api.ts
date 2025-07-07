@@ -77,6 +77,33 @@ export async function getProductBySKU(sku: string) {
   return json.data ?? json;
 }
 
+export async function updateProduct(sku: string, data: any) {
+  const payload: any = {};
+  if (typeof data.name === "string") payload.name = data.name;
+  if (typeof data.stock === "number") payload.stock = data.stock;
+  if (typeof data.price === "number") payload.price = data.price;
+
+  const res = await fetch(ENDPOINTS.PRODUCT_BY_SKU(sku), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Error al actualizar producto");
+  return res.json();
+}
+
+
+export async function deleteProduct(sku: string) {
+  const res = await fetch(ENDPOINTS.PRODUCT_BY_SKU(sku), {
+    method: "DELETE",
+    credentials: "include"
+  });
+  if (!res.ok) throw new Error("Error al eliminar producto");
+  return res.json();
+}
+
+
 export async function getSession() {
   const res = await fetch(ENDPOINTS.ME, {
     method: "GET",
@@ -85,4 +112,38 @@ export async function getSession() {
   if (!res.ok) return null;
   const body = await res.json();
   return body?.data || null;
+} 
+
+export async function getMovements() {
+  const res = await fetch(ENDPOINTS.MOVEMENTS, { credentials: "include" });
+  const contentType = res.headers.get("content-type");
+  if (contentType && contentType.includes("application/json")) {
+    const json = await res.json();
+
+    return json.data || [];
+  } else {
+    throw new Error("Respuesta de movimientos no es JSON");
+  }
 }
+
+export async function addMovement(movement: {
+  sku: string;
+  type: string;
+  quantity: number;
+  user_email: string;
+  note?: string;
+}) {
+  const res = await fetch(ENDPOINTS.MOVEMENTS, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(movement),
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Error al registrar movimiento:", res.status, errorText);
+    throw new Error(`Error al registrar movimiento: ${errorText}`);
+  }
+  return res.json();
+}
+

@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getProducts, addProduct } from "../api";
+import {
+  getProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  addMovement,
+  getSession
+} from "../api";
 
 type OrderBy = "name" | "sku" | "stock" | "price";
 type OrderDir = "asc" | "desc";
@@ -17,6 +24,18 @@ export default function Products() {
   const [orderBy, setOrderBy] = useState<OrderBy>("name");
   const [orderDir, setOrderDir] = useState<OrderDir>("asc");
   const [showForm, setShowForm] = useState(false);
+  const [user, setUser] = useState<{ email: string; name?: string; role?: string } | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
+
+  // Estado para edición
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editProduct, setEditProduct] = useState<any>(null);
+
+  useEffect(() => {
+    getSession()
+      .then(setUser)
+      .finally(() => setUserLoading(false));
+  }, []);
 
   useEffect(() => {
     fetchProducts();
@@ -28,9 +47,7 @@ export default function Products() {
 
   const fetchProducts = () => {
     getProducts()
-      .then((data) => {
-        setProducts(data);
-      })
+      .then((data) => setProducts(data))
       .catch((err) => setError(err.message));
   };
 
@@ -91,8 +108,20 @@ export default function Products() {
     setSkuError("");
     setError("");
 
+    if (!user) {
+      setError("No autenticado. Inicia sesión para agregar productos.");
+      return;
+    }
+
     addProduct(newProduct)
       .then(() => {
+        addMovement({
+          sku: newProduct.sku,
+          type: "PRODUCT_CREATED",
+          quantity: Number(newProduct.stock),
+          user_email: user.email,
+          note: "Creación de producto"
+        });
         setMessage("Producto agregado exitosamente");
         setNewProduct({ name: "", sku: "", stock: 0, price: 0 });
         fetchProducts();
@@ -100,6 +129,120 @@ export default function Products() {
       })
       .catch((err) => setError(err.message));
   };
+
+  function startEdit(idx: number, prod: any) {
+    setEditIndex(idx);
+    setEditProduct({ ...prod });
+  }
+
+  function handleEditChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    setEditProduct((prev: any) => ({
+      ...prev,
+      [name]: name === "stock" || name === "price" ? Number(value) : value,
+    }));
+  }
+
+  function saveEdit(sku: string) {
+    if (!user) {
+      setError("No autenticado. Inicia sesión para editar productos.");
+      return;
+    }
+
+    const oldProduct = products[editIndex!];
+    const payload: any = {};
+
+    if (
+      typeof editProduct.name === "string" &&
+      editProduct.name.trim() !== "" &&
+      editProduct.name !== oldProduct.name
+    ) {
+      payload.name = editProduct.name;
+    }
+
+    if (
+      typeof editProduct.stock === "number" &&
+      editProduct.stock !== oldProduct.stock
+    ) {
+      payload.stock = editProduct.stock;
+    }
+
+    if (
+      typeof editProduct.price === "number" &&
+      editProduct.price !== oldProduct.price
+    ) {
+      payload.price = editProduct.price;
+    }
+
+    if (Object.keys(payload).length === 0) {
+      setMessage("No hay cambios para actualizar.");
+      setEditIndex(null);
+      return;
+    }
+
+    // Convertir explícitamente a número para evitar errores raros
+    const oldStock = Number(oldProduct.stock);
+    const newStock = Number(editProduct.stock);
+
+    const quantityChange = !isNaN(oldStock) && !isNaN(newStock)
+      ? Math.abs(newStock - oldStock)
+      : 0;
+
+    updateProduct(sku, payload)
+      .then(() => {
+        if ("stock" in payload && quantityChange > 0) {
+          addMovement({
+            sku,
+            type: newStock > oldStock ? "STOCK_ADDED" : "STOCK_REMOVED",
+            quantity: quantityChange,
+            user_email: user.email,
+            note: "Ajuste de stock",
+          });
+        }
+        setMessage("Producto actualizado");
+        setEditIndex(null);
+        fetchProducts();
+        setTimeout(() => setMessage(""), 3000);
+      })
+      .catch((err) => setError(err.message));
+  }
+
+  function handleDelete(sku: string) {
+    if (!user) {
+      setError("No autenticado. Inicia sesión para eliminar productos.");
+      return;
+    }
+    if (!window.confirm("¿Seguro que quieres eliminar este producto?")) return;
+
+    const movimiento = {
+      sku,
+      type: "PRODUCT_DELETED",
+      quantity: 0,
+      user_email: user.email,
+      note: "Eliminación de producto",
+    };
+    console.log("Movimiento a registrar en eliminación:", movimiento);
+
+    deleteProduct(sku)
+      .then(() => {
+        addMovement(movimiento)
+          .then(() => {
+            setMessage("Producto eliminado");
+            fetchProducts();
+            setTimeout(() => setMessage(""), 3000);
+          })
+          .catch((err) => {
+            console.error("Error registrando movimiento tras eliminación:", err);
+            setError(err.message);
+          });
+      })
+      .catch((err) => setError(err.message));
+  }
+
+
+  // Bloqueo UX mientras se carga o si no hay usuario
+  if (userLoading) return <div>Cargando usuario...</div>;
+  if (!user) return <div>No autenticado. Inicia sesión para gestionar productos.</div>;
 
   return (
     <div className="page-container">
@@ -204,13 +347,43 @@ export default function Products() {
           <span>Nombre</span>
           <span>Stock</span>
           <span>Precio</span>
+          <span>Acciones</span>
         </div>
-        {filteredProducts.map((prod) => (
+        {filteredProducts.map((prod, idx) => (
           <div className="table-row" key={prod.id || prod.sku}>
-            <span>{prod.sku}</span>
-            <span>{prod.name}</span>
-            <span>{prod.stock}</span>
-            <span>{prod.price}</span>
+            {editIndex === idx ? (
+              <>
+                <span>{prod.sku}</span>
+                <input
+                  value={editProduct.name}
+                  name="name"
+                  onChange={handleEditChange}
+                />
+                <input
+                  value={editProduct.stock}
+                  name="stock"
+                  type="number"
+                  onChange={handleEditChange}
+                />
+                <input
+                  value={editProduct.price}
+                  name="price"
+                  type="number"
+                  onChange={handleEditChange}
+                />
+                <button onClick={() => saveEdit(prod.sku)}>Guardar</button>
+                <button onClick={() => setEditIndex(null)}>Cancelar</button>
+              </>
+            ) : (
+              <>
+                <span>{prod.sku}</span>
+                <span>{prod.name}</span>
+                <span>{prod.stock}</span>
+                <span>{prod.price}</span>
+                <button onClick={() => startEdit(idx, prod)}>Editar</button>
+                <button onClick={() => handleDelete(prod.sku)}>Eliminar</button>
+              </>
+            )}
           </div>
         ))}
       </div>
