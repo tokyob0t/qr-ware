@@ -2,6 +2,7 @@ from flasgger import swag_from
 from flask import Blueprint, g, request
 from pydantic import ValidationError
 
+from ..decorators import requires_roles
 from ..classes import Response as res
 from ..schemas.movements import ProductMovementData, ProductMovementPayload
 from ..supabase_client import get_connection
