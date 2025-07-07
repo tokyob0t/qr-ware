@@ -6,7 +6,7 @@ from pydantic import ValidationError
 
 from ..classes import Response as res
 from ..decorators import requires_roles
-from ..schemas import ProductData, ProductPayload
+from ..schemas import ProductData, ProductPayload, ProductPatchPayload
 from ..supabase_client import get_connection
 
 products_bp = Blueprint('products', __name__)
@@ -118,7 +118,7 @@ async def product_by_sku(sku: str):
             return res.error('SKU cannot be updated', status_code=400)
 
         try:
-            update_data = ProductPayload(**raw_data).dict(exclude_unset=True)
+            update_data = ProductPatchPayload(**raw_data).dict(exclude_unset=True)
         except ValidationError as e:
             return res.error(errors=e.errors())
 
