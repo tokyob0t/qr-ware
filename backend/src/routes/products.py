@@ -45,13 +45,13 @@ class ProductService:
             .execute()
         )
 
-        return result.status_code == 200
+        return True
 
     @staticmethod
     async def delete_by_sku(sku: str) -> bool:
         conn = await get_connection()
         result = await conn.table('products').delete().eq('sku', sku).execute()
-        return result.status_code == 200
+        return True
 
     @staticmethod
     async def new_product(payload: ProductPayload) -> bool:
