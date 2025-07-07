@@ -1,5 +1,5 @@
 from .auth import UserData, UserLoginPayload, UserRegisterPayload, UserRole
-from .products import ProductData, ProductPayload
+from .products import ProductData, ProductPayload, ProductPatchPayload
 
 __all__ = [
     UserLoginPayload,
@@ -8,4 +8,5 @@ __all__ = [
     UserData,
     ProductPayload,
     ProductData,
+    ProductPatchPayload
 ]
