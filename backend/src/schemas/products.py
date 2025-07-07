@@ -14,6 +14,13 @@ class ProductPayload(BaseModel):
     is_active: bool = True
     barcode: Optional[str] = None
 
+class ProductPatchPayload(BaseModel):
+    name: Optional[str] = None
+    price: Optional[float] = None
+    description: Optional[str] = None
+    stock: Optional[int] = None
+    is_active: Optional[bool] = None
+    barcode: Optional[str] = None
 
 @dataclass_json(letter_case=LetterCase.SNAKE)
 @dataclass
